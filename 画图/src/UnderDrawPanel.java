@@ -55,11 +55,6 @@ public class UnderDrawPanel extends JPanel implements MouseListener, MouseMotion
 		this.setBackground(Color.gray);
 	}
 
-	/*
-	 * @Override public Dimension getPreferredSize() { return new Dimension(400,
-	 * 300); }
-	 */
-
 	// »æÖÆÐéÏß¿ò
 	@Override
 	public void paint(Graphics g) {

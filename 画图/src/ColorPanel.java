@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -11,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -110,12 +113,10 @@ public class ColorPanel extends JPanel implements MouseListener, ActionListener 
 		ImageIcon imageIcon[] = new ImageIcon[4];
 		for (int i = 0; i < 4; i++) {
 			imageIcon[i] = new ImageIcon("src/img/icon" + (i + 1) + ".gif");
-			imageIcon[i].getImage().getScaledInstance(16, 16, Image.SCALE_DEFAULT);
-			// special[i] = new JLabel(new
-			// ImageIcon(imageIcon[i].getImage().getScaledInstance(16, 16,
-			// Image.SCALE_DEFAULT)));
+			imageIcon[i].getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT);
 			special[i] = new JLabel(imageIcon[i]);
 		}
+		
 		tsbPanel[28].add(special[0]);
 		tsbPanel[29].add(special[1]);
 		tsbPanel[30].add(special[2]);
@@ -181,10 +182,6 @@ public class ColorPanel extends JPanel implements MouseListener, ActionListener 
 		for (int i = 0; i < 32; i++) {
 			if (obj.equals(tsbPanel[i])) {
 				if (i >= 28) {
-					// if (e.getButton() == 1)
-					// g2d.drawImage(new ImageIcon(imgURL[i % 14]).getImage(), 0, 0, 18, 18, null);
-					// else if (e.getButton() == 3)
-					// g2d2.drawImage(new ImageIcon(imgURL[i % 14]).getImage(), 0, 0, 18, 18, null);
 					if (i == 28) {
 						// ×
 						if (e.getButton() == 1) {
@@ -222,21 +219,23 @@ public class ColorPanel extends JPanel implements MouseListener, ActionListener 
 					if (i == 30) {
 						// 选择图片填充
 						JFileChooser fileChooser = new JFileChooser();
-						fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("图片(*.jpg,*.png,*.jpeg)", "jpg","png","jpeg"));
+						fileChooser.addChoosableFileFilter(
+								new FileNameExtensionFilter("图片(*.jpg,*.png,*.jpeg)", "jpg", "png", "jpeg"));
 						int flag = fileChooser.showOpenDialog(null);
 						if (flag == 1)
 							return;
-						File iconName = fileChooser.getSelectedFile();//路径
+						File iconName = fileChooser.getSelectedFile();// 路径
 						ImageIcon icon = new ImageIcon(iconName.getAbsolutePath());
-						BufferedImage buf = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_3BYTE_BGR);
+						BufferedImage buf = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(),
+								BufferedImage.TYPE_3BYTE_BGR);
 						Graphics2D g2 = buf.createGraphics();
 						g2.setColor(Color.WHITE);
 						g2.fillRect(0, 0, 18, 18);
-						g2.drawImage(icon.getImage(), 0,0,this);
-						if(e.getButton()==1) {
+						g2.drawImage(icon.getImage(), 0, 0, this);
+						if (e.getButton() == 1) {
 							g2d.drawImage(buf, 0, 0, 18, 18, this);
 							border_color = new TexturePaint(buf, new Rectangle(20, 20));
-						}else if(e.getButton()==3) {
+						} else if (e.getButton() == 3) {
 							g2d2.drawImage(buf, 0, 0, 18, 18, this);
 							fill_color = new TexturePaint(buf, new Rectangle(20, 20));
 						}
@@ -248,15 +247,28 @@ public class ColorPanel extends JPanel implements MouseListener, ActionListener 
 							// 设置文字颜色
 							Color font_color = new Color(0, 0, 0);
 							font_color = JColorChooser.showDialog(null, "选择文字颜色", Color.black);
-							BufferedImage buf = new BufferedImage(18, 18, BufferedImage.TYPE_3BYTE_BGR);
-
+							BufferedImage buf = new BufferedImage(DrawPanel.W, DrawPanel.H,
+									BufferedImage.TYPE_3BYTE_BGR);// 为了方便拿出字体的长度和宽度
+							Font font = new Font("宋体", Font.PLAIN, 10); // 设置自己的样式
+							FontRenderContext frc = buf.createGraphics().getFontRenderContext();
+							//它之前的操作都是为了构造TextLayout用的
+							TextLayout tl = new TextLayout(wenzi, font, frc);// 创建一个字体的布局
+							int w = (int) (tl.getBounds().getWidth() + tl.getCharacterCount());// 计算文字的宽度
+							int h = (int) (tl.getBounds().getHeight() + 3);// 计算文字的高度
+							buf = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);// 将文字画在上面
+							Graphics2D buf_g2d = buf.createGraphics();//
+							buf_g2d.setColor(Color.white);
+							buf_g2d.fillRect(0, 0, w, h);
+							buf_g2d.setColor(font_color);
+							buf_g2d.drawString(wenzi, 0, 10);
 							if (e.getButton() == 1) {
-								border_color = new TexturePaint(buf, new Rectangle(18, 18));
+								border_color = new TexturePaint(buf, new Rectangle(w, h));
 								g2d.setPaint(Color.WHITE);
 								g2d.fillRect(0, 0, 18, 18);
 								g2d.setPaint(Color.BLACK);
 								g2d.drawString("字", 3, 12);
 							} else if (e.getButton() == 3) {
+								fill_color = new TexturePaint(buf, new Rectangle(w, h));
 								g2d2.setPaint(Color.WHITE);
 								g2d2.fillRect(0, 0, 18, 18);
 								g2d2.setPaint(Color.BLACK);

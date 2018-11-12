@@ -18,6 +18,7 @@ import javax.swing.KeyStroke;
 public class Painter extends JFrame implements ActionListener {
 	public static final int WIDTH = 1200;
 	public static final int HEIGHT = 900;
+	public static boolean isShan;//判断是否是扇形
 	public static int method;
 	private String menuBar[] = { "文件(F)", "编辑(E)", "视图(V)", "说明(H)" };
 	private String menuItem[][] = { { "新建(N)|78", "打开(O)|79", "保存(S)|83", "另存为(A)", "退出(X)|88" },
@@ -31,7 +32,12 @@ public class Painter extends JFrame implements ActionListener {
 	private JMenu[] menu;
 	private JMenuItem[][] menuI;
 	private JToggleButton[] tgButtons;
-
+	private JPanel rightPanel;
+	private JPanel toolPanel;
+	private JPanel downPanel;
+	private UnderDrawPanel uDP;
+	private ColorPanel cPanel;
+	private RightTool right_Tool;
 	public Painter() {
 		mb = new JMenuBar();
 		menu = new JMenu[menuBar.length];
@@ -79,24 +85,17 @@ public class Painter extends JFrame implements ActionListener {
 		}
 		tgButtons[0].setSelected(true);
 		// 每个部分装入一个Panel里面
-		JPanel toolPanel = new JPanel();
-		JPanel rightPanel = new JPanel();
-		JPanel downPanel = new JPanel();
+		toolPanel = new JPanel();
+		rightPanel = new JPanel();
+		downPanel = new JPanel();
 		toolPanel.add(toolBar);
 		// 添加中间位置的画布
-		UnderDrawPanel uDP = new UnderDrawPanel();
-
-		/*
-		 * centerPanel.setBackground(new Color(139 ,137 ,137));
-		 * centerPanel.setLayout(null); centerPanel.add(uDP);
-		 * centerPanel.add(uDP.ctrl_down); centerPanel.add(uDP.ctrl_right);
-		 * centerPanel.add(uDP.ctrl_left);
-		 */
-
+		uDP = new UnderDrawPanel();
+		right_Tool = new RightTool();
 		rightPanel.add(new RightTool());
 
 		// 下方面板
-		ColorPanel cPanel = new ColorPanel();
+		cPanel = new ColorPanel();
 		downPanel.setLayout(new BorderLayout());
 		downPanel.add(new JPanel(), BorderLayout.NORTH);
 		downPanel.add(cPanel, BorderLayout.CENTER);
@@ -107,6 +106,7 @@ public class Painter extends JFrame implements ActionListener {
 		this.add(rightPanel, BorderLayout.EAST);
 		this.add(downPanel, BorderLayout.SOUTH);
 		this.add(uDP, BorderLayout.CENTER);
+		this.setTitle("范捷的画图板");
 		this.setVisible(true);
 		this.setSize(Painter.WIDTH, Painter.HEIGHT);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
